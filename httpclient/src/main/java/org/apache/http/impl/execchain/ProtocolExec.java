@@ -41,6 +41,7 @@ import org.apache.http.annotation.Contract;
 import org.apache.http.annotation.ThreadingBehavior;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpExecutionAware;
@@ -50,6 +51,8 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpCoreContext;
@@ -173,6 +176,13 @@ public class ProtocolExec implements ClientExecChain {
                 credsProvider.setCredentials(
                         new AuthScope(target),
                         new UsernamePasswordCredentials(userinfo));
+
+                AuthCache authCache = context.getAuthCache();
+                if (authCache == null) {
+                    authCache = new BasicAuthCache();
+                    context.setAuthCache(authCache);
+                }
+                authCache.put(target, new BasicScheme());
             }
         }
 

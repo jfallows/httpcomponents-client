@@ -31,8 +31,10 @@ import java.net.URI;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScheme;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpExecutionAware;
@@ -193,6 +195,11 @@ public class TestProtocolExec {
         final Credentials creds = credentialsProvider.getCredentials(new AuthScope("bar", -1, null));
         Assert.assertNotNull(creds);
         Assert.assertEquals("somefella", creds.getUserPrincipal().getName());
+        final AuthCache authCache = context.getAuthCache();
+        Assert.assertNotNull(authCache);
+        final AuthScheme authScheme = authCache.get(new HttpHost("bar", -1));
+        Assert.assertNotNull(authScheme);
+        Assert.assertEquals("basic", authScheme.getSchemeName());
     }
 
     @Test(expected = HttpException.class)
